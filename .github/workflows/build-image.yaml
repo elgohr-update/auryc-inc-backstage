@@ -1,0 +1,31 @@
+name: Build Image
+on:
+  push:
+    branches:
+        - master
+jobs:
+  Build-Image:
+    if: ${{github.event_name == 'push'}}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check Out
+      uses: actions/checkout@master
+    - name: GitHub Environment Variables Action
+      uses: FranzDiebold/github-env-vars-action@v1.2.1
+    - name: Check if master branch
+      run: echo MASTER_TAG="latest" >> $GITHUB_ENV
+      if: ${{env.GITHUB_REF_NAME_SLUG == 'master'}}
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      env:
+        IMAGE_VERSION: ${{ env.GITHUB_REF_NAME_SLUG }}-${{env.GITHUB_SHA_SHORT}}
+      with:
+        registry: ghcr.io
+        name: ${{ github.repository }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.TOKEN_GITHUB_PACKAGES }}
+        cache: true
+        tags: ${{env.GITHUB_SHA_SHORT}},${{env.GITHUB_REF_NAME_SLUG}},${{ env.MASTER_TAG }}
+        buildargs: IMAGE_VERSION
+    outputs:
+      image-tag: ${{env.GITHUB_SHA_SHORT}}
