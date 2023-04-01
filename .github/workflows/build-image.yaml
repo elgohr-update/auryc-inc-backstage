@@ -16,7 +16,7 @@ jobs:
       run: echo MASTER_TAG="latest" >> $GITHUB_ENV
       if: ${{env.GITHUB_REF_NAME_SLUG == 'master'}}
     - name: Publish to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v5
       env:
         IMAGE_VERSION: ${{ env.GITHUB_REF_NAME_SLUG }}-${{env.GITHUB_SHA_SHORT}}
       with:
